@@ -81,12 +81,10 @@ def get_patterns(node, marker_id, get_fills=True, get_strokes=True):
         stroke = element.get_style('stroke')
 
         if get_fills and fill is not None:
-            fill_pattern = auto_fill(pattern).shape
-            fills.append(fill_pattern)
-            #fill_pattern = Stroke(pattern).paths
-            #linear_rings = [shgeo.LinearRing(path) for path in fill_pattern]
-            #for ring in linear_rings:
-            #    fills.append(shgeo.Polygon(ring))
+            fill_pattern = Stroke(pattern).paths
+            linear_rings = [shgeo.LinearRing(path) for path in fill_pattern]
+            for ring in linear_rings:
+                fills.append(shgeo.Polygon(ring))
 
         if get_strokes and stroke is not None:
             stroke_pattern = Stroke(pattern).paths
