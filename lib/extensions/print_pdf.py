@@ -73,7 +73,10 @@ class PrintPreviewServer(Thread):
 
     def __set_resources_path(self):
         if getattr(sys, 'frozen', False):
-            self.resources_path = os.path.join(sys._MEIPASS, 'print', 'resources')
+            if sys.platform == "darwin":
+                self.resources_path = os.path.join(sys._MEIPASS, "..", 'Resources', 'print', 'resources')
+            else:
+                self.resources_path = os.path.join(sys._MEIPASS, 'print', 'resources')
         else:
             self.resources_path = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', '..', 'print', 'resources'))
 
@@ -183,7 +186,10 @@ class PrintPreviewServer(Thread):
 class Print(InkstitchExtension):
     def build_environment(self):
         if getattr(sys, 'frozen', False):
-            print_dir = os.path.join(sys._MEIPASS, "print")
+            if sys.platform == "darwin":
+                print_dir = os.path.join(sys._MEIPASS, "..", 'Resources', "print")
+            else:
+                print_dir = os.path.join(sys._MEIPASS, "print")
         else:
             print_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", "print"))
 
@@ -281,7 +287,7 @@ class Print(InkstitchExtension):
                 'num_trims': stitch_plan.num_trims,
                 'dimensions': stitch_plan.dimensions_mm,
                 'num_stitches': stitch_plan.num_stitches,
-                'estimated_thread': '',  # TODO
+                'estimated_thread': stitch_plan.estimated_thread
             },
             svg_overview=overview_svg,
             color_blocks=stitch_plan.color_blocks,

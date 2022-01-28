@@ -76,10 +76,8 @@ def auto_fill(shape,
     if not graph_is_valid(fill_stitch_graph, shape, max_stitch_length):
         return fallback(shape, running_stitch_length)
 
-    travel_graph = build_travel_graph(
-        fill_stitch_graph, shape, angle, underpath)
-    path = find_stitch_path(
-        fill_stitch_graph, travel_graph, starting_point, ending_point)
+    travel_graph = build_travel_graph(fill_stitch_graph, shape, angle, underpath)
+    path = find_stitch_path(fill_stitch_graph, travel_graph, starting_point, ending_point)
     result = path_to_stitches(path, travel_graph, fill_stitch_graph, angle, row_spacing,
                               max_stitch_length, running_stitch_length, staggers, skip_last, line is not None, offset_by_half)
 
@@ -99,8 +97,7 @@ def which_outline(shape, coords):
     point = shgeo.Point(*coords)
     outlines = list(shape.boundary)
     outline_indices = list(range(len(outlines)))
-    closest = min(outline_indices,
-                  key=lambda index: outlines[index].distance(point))
+    closest = min(outline_indices, key=lambda index: outlines[index].distance(point))
 
     return closest
 
@@ -215,8 +212,7 @@ def insert_node(graph, shape, point):
         if key == "outline":
             edges.append(((start, end), data))
 
-    edge, data = min(edges, key=lambda edge_data: shgeo.LineString(
-        edge_data[0]).distance(projected_point))
+    edge, data = min(edges, key=lambda edge_data: shgeo.LineString(edge_data[0]).distance(projected_point))
 
     graph.remove_edge(*edge, key="outline")
     graph.add_edge(edge[0], node, key="outline", **data)
@@ -229,8 +225,7 @@ def tag_nodes_with_outline_and_projection(graph, shape, nodes):
         outline_index = which_outline(shape, node)
         outline_projection = project(shape, node, outline_index)
 
-        graph.add_node(node, outline=outline_index,
-                       projection=outline_projection)
+        graph.add_node(node, outline=outline_index, projection=outline_projection)
 
 
 def add_boundary_travel_nodes(graph, shape):
@@ -248,11 +243,9 @@ def add_boundary_travel_nodes(graph, shape):
                     # resolution.  A pixel is around a quarter of a millimeter.
                     for i in range(1, int(length)):
                         subpoint = segment.interpolate(i)
-                        graph.add_node((subpoint.x, subpoint.y), projection=outline.project(
-                            subpoint), outline=outline_index)
+                        graph.add_node((subpoint.x, subpoint.y), projection=outline.project(subpoint), outline=outline_index)
 
-            graph.add_node((point.x, point.y), projection=outline.project(
-                point), outline=outline_index)
+            graph.add_node((point.x, point.y), projection=outline.project(point), outline=outline_index)
             prev = point
 
 
@@ -267,8 +260,7 @@ def add_edges_between_outline_nodes(graph, duplicate_every_other=False):
     outline.
     """
 
-    # returns a list of tuples: [(node, {data}), (node, {data}) ...]
-    nodes = list(graph.nodes(data=True))
+    nodes = list(graph.nodes(data=True))  # returns a list of tuples: [(node, {data}), (node, {data}) ...]
     nodes.sort(key=lambda node: (node[1]['outline'], node[1]['projection']))
 
     for outline_index, nodes in groupby(nodes, key=lambda node: node[1]['outline']):
@@ -333,8 +325,7 @@ def build_travel_graph(fill_stitch_graph, shape, fill_stitch_angle, underpath):
     graph.add_nodes_from(fill_stitch_graph.nodes(data=True))
 
     if underpath:
-        boundary_points, travel_edges = build_travel_edges(
-            shape, fill_stitch_angle)
+        boundary_points, travel_edges = build_travel_edges(shape, fill_stitch_angle)
 
         # This will ensure that a path traveling inside the shape can reach its
         # target on the outline, which will be one of the points added above.
@@ -387,8 +378,7 @@ def process_travel_edges(graph, fill_stitch_graph, shape, travel_edges):
 
     # This makes the distance calculations below a bit faster.  We're
     # not looking for high precision anyway.
-    outline = shape.boundary.simplify(
-        0.5 * PIXELS_PER_MM, preserve_topology=False)
+    outline = shape.boundary.simplify(0.5 * PIXELS_PER_MM, preserve_topology=False)
 
     for ls in travel_edges:
         # In most cases, ls will be a simple line segment.  If we're
@@ -476,12 +466,9 @@ def build_travel_edges(shape, fill_angle):
     else:
         scale = 1.0
 
-    grating1 = travel_grating(
-        shape, fill_angle + math.pi / 4, scale * 2 * PIXELS_PER_MM)
-    grating2 = travel_grating(
-        shape, fill_angle - math.pi / 4, scale * 2 * PIXELS_PER_MM)
-    grating3 = travel_grating(
-        shape, fill_angle - math.pi / 2, scale * math.sqrt(2) * PIXELS_PER_MM)
+    grating1 = travel_grating(shape, fill_angle + math.pi / 4, scale * 2 * PIXELS_PER_MM)
+    grating2 = travel_grating(shape, fill_angle - math.pi / 4, scale * 2 * PIXELS_PER_MM)
+    grating3 = travel_grating(shape, fill_angle - math.pi / 2, scale * math.sqrt(2) * PIXELS_PER_MM)
 
     debug.add_layer("auto-fill travel")
     debug.log_line_strings(grating1, "grating1")
@@ -492,12 +479,10 @@ def build_travel_edges(shape, fill_angle):
                  for ls in mls
                  for coord in ls.coords]
 
-    diagonal_edges = ensure_multi_line_string(
-        grating1.symmetric_difference(grating2))
+    diagonal_edges = ensure_multi_line_string(grating1.symmetric_difference(grating2))
 
     # without this, floating point inaccuracies prevent the intersection points from lining up perfectly.
-    vertical_edges = ensure_multi_line_string(
-        snap(grating3.difference(grating1), diagonal_edges, 0.005))
+    vertical_edges = ensure_multi_line_string(snap(grating3.difference(grating1), diagonal_edges, 0.005))
 
     return endpoints, chain(diagonal_edges, vertical_edges)
 
@@ -559,8 +544,7 @@ def find_stitch_path(graph, travel_graph, starting_point=None, ending_point=None
             last_vertex, last_key = current_vertex, current_key
             vertex_stack.pop()
         else:
-            ignore, next_vertex, next_key = pick_edge(
-                graph.edges(current_vertex, keys=True))
+            ignore, next_vertex, next_key = pick_edge(graph.edges(current_vertex, keys=True))
             vertex_stack.append((next_vertex, next_key))
             graph.remove_edge(current_vertex, next_vertex, next_key)
 
@@ -589,8 +573,7 @@ def find_stitch_path(graph, travel_graph, starting_point=None, ending_point=None
     # relevant in the case that the user specifies an underlay with an inset
     # value, because the starting point (and possibly ending point) can be
     # inside the shape.
-    outline_nodes = [node for node, outline in travel_graph.nodes(
-        data="outline") if outline is not None]
+    outline_nodes = [node for node, outline in travel_graph.nodes(data="outline") if outline is not None]
     real_end = nearest_node(outline_nodes, ending_point)
     path.append(PathEdge((ending_node, real_end), key="outline"))
 
@@ -729,7 +712,6 @@ def path_to_stitches(path, travel_graph, fill_stitch_graph, angle, row_spacing, 
             travel_graph.remove_edges_from(
                 fill_stitch_graph[edge[0]][edge[1]]['segment'].get('underpath_edges', []))
         else:
-            stitches.extend(
-                travel(travel_graph, edge[0], edge[1], running_stitch_length, skip_last))
+            stitches.extend(travel(travel_graph, edge[0], edge[1], running_stitch_length, skip_last))
 
     return stitches

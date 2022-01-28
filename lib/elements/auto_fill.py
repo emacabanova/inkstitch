@@ -182,10 +182,13 @@ class AutoFill(EmbroideryElement):
         return self.outline.length
 
     @property
+    def flip(self):
+        return False
+
+    @property
     @param('running_stitch_length_mm',
            _('Running stitch length (traversal between sections)'),
-           tooltip=_(
-               'Length of stitches around the outline of the fill region used when moving from section to section.'),
+           tooltip=_('Length of stitches around the outline of the fill region used when moving from section to section.'),
            unit='mm',
            type='float',
            default=1.5,
@@ -202,8 +205,7 @@ class AutoFill(EmbroideryElement):
     @property
     @param('fill_underlay_angle',
            _('Fill angle'),
-           tooltip=_(
-               'Default: fill angle + 90 deg. Insert comma-seperated list for multiple layers.'),
+           tooltip=_('Default: fill angle + 90 deg. Insert comma-seperated list for multiple layers.'),
            unit='deg',
            group=_('AutoFill Underlay'),
            type='float')
@@ -214,8 +216,7 @@ class AutoFill(EmbroideryElement):
         if underlay_angles is not None:
             underlay_angles = underlay_angles.strip().split(',')
             try:
-                underlay_angles = [math.radians(
-                    float(angle)) for angle in underlay_angles]
+                underlay_angles = [math.radians(float(angle)) for angle in underlay_angles]
             except (TypeError, ValueError):
                 return default_value
         else:
@@ -247,8 +248,7 @@ class AutoFill(EmbroideryElement):
     @property
     @param('fill_underlay_inset_mm',
            _('Inset'),
-           tooltip=_(
-               'Shrink the shape before doing underlay, to prevent underlay from showing around the outside of the fill.'),
+           tooltip=_('Shrink the shape before doing underlay, to prevent underlay from showing around the outside of the fill.'),
            unit='mm',
            group=_('AutoFill Underlay'),
            type='float',
@@ -271,8 +271,7 @@ class AutoFill(EmbroideryElement):
     @property
     @param('expand_mm',
            _('Expand'),
-           tooltip=_(
-               'Expand the shape before fill stitching, to compensate for gaps between shapes.'),
+           tooltip=_('Expand the shape before fill stitching, to compensate for gaps between shapes.'),
            unit='mm',
            type='float',
            default=0,
