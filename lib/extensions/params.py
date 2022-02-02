@@ -83,7 +83,6 @@ class ParamsTab(ScrolledPanel):
         # end wxGlade
 
     def pair(self, tab):
-        # print self.name, "paired with", tab.name
         self.paired_tab = tab
         self.update_description()
 
@@ -105,7 +104,6 @@ class ParamsTab(ScrolledPanel):
 
     def update_toggle_state(self, event=None, notify_pair=True):
         enable = self.enabled()
-        # print self.name, "update_toggle_state", enable
         for child in self.settings_grid.GetChildren():
             widget = child.GetWindow()
             if widget:
@@ -134,7 +132,6 @@ class ParamsTab(ScrolledPanel):
             event.Skip()
 
     def pair_changed(self, value):
-        # print self.name, "pair_changed", value
         new_value = not value
 
         if self.enabled() != new_value:
@@ -189,7 +186,6 @@ class ParamsTab(ScrolledPanel):
     def apply(self):
         values = self.get_values()
         for node in self.nodes:
-            # print >> sys.stderr, "apply: ", self.name, node.id, values
             for name, value in values.items():
                 node.set_param(name, value)
 
