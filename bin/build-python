@@ -40,9 +40,6 @@ pyinstaller_args+="--log-level DEBUG "
 # This adds bundle identifier in reverse DSN format for macos
 if [ "$BUILD" = "osx" ]; then
     pyinstaller_args+="--osx-bundle-identifier org.inkstitch.app "
-    # in macOS we get an error when building libgfortran: incompatible with target arch x86_64 (has arch: arm64)!
-    # let's try if this fixes it
-    pyinstaller_args+="--target-arch x86_64 "
     if [[ -z ${GITHUB_REF} ]]; then
         :
     else
