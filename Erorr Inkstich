@@ -1,0 +1,24 @@
+path161: error: Error during autofill!  This means that there is a problem with Ink/Stitch.
+
+If you'd like to help us make Ink/Stitch better, please paste this whole message into a new issue at: https://github.com/inkstitch/inkstitch/issues/new
+
+Ink/Stitch Version: v2.1.2 (windows)
+
+
+Traceback (most recent call last):
+  File "lib\stitches\auto_fill.py", line 64, in auto_fill
+  File "lib\debug.py", line 133, in decorated
+  File "lib\stitches\auto_fill.py", line 145, in build_fill_stitch_graph
+  File "lib\stitches\fill.py", line 95, in intersect_region_with_grating
+ValueError: not enough values to unpack (expected 4, got 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "lib\elements\auto_fill.py", line 246, in to_stitch_groups
+  File "lib\debug.py", line 133, in decorated
+  File "lib\stitches\auto_fill.py", line 67, in auto_fill
+  File "lib\stitches\auto_fill.py", line 264, in fallback
+  File "shapely\geometry\base.py", line 868, in __getitem__
+IndexError: tuple index out of range
+
